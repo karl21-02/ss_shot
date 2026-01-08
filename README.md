@@ -26,18 +26,22 @@
 
 ## Features
 
-### MVP (Phase 1-2)
+### MVP (Phase 1-2) - 완료
 - [x] 프로젝트 세팅 및 문서화
-- [ ] 갤러리 연동 (Screenshots 앨범)
-- [ ] On-Device OCR (Google ML Kit)
-- [ ] 텍스트 검색 기능
-- [ ] 카테고리 자동 분류
+- [x] 갤러리 연동 (Screenshots 앨범)
+- [x] On-Device OCR (Google ML Kit)
+- [x] 텍스트 검색 기능
+- [x] 카테고리 자동 분류
 
-### Coming Soon (Phase 3-4)
+### Phase 3 - 서버 연동 (진행 예정)
+- [ ] 소셜 로그인 (Google, Apple)
+- [ ] JWT 토큰 관리
+- [ ] 서버 동기화 API 연동
+
+### Phase 4 - 고도화 (진행 예정)
 - [ ] 스마트 액션 (URL 열기, 계좌 복사, 캘린더 등록)
 - [ ] 검색 하이라이팅
 - [ ] Swipe-to-Clean 정리 모드
-- [ ] 소셜 로그인 (Google, Apple)
 
 ---
 
@@ -83,6 +87,7 @@ lib/
 | [06-DB_SCHEMA](./docs/06-DB_SCHEMA.md) | DB 스키마 |
 | [07-AUTH_SECURITY](./docs/07-AUTH_SECURITY.md) | 인증/보안 |
 | [08-DEVELOPMENT_GUIDE](./docs/08-DEVELOPMENT_GUIDE.md) | 개발 가이드 |
+| [09-SERVER_REQUIREMENTS](./docs/09-SERVER_REQUIREMENTS.md) | 서버 API 명세 |
 | [LOGGING](./docs/LOGGING.md) | 로깅 표준 |
 
 ---

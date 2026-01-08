@@ -16,6 +16,7 @@
 | 06 | [DB_SCHEMA](./06-DB_SCHEMA.md) | ERD, 테이블 정의, 인덱스 전략 | 개발자 |
 | 07 | [AUTH_SECURITY](./07-AUTH_SECURITY.md) | 인증 흐름, JWT, 보안 정책 | 개발자 |
 | 08 | [DEVELOPMENT_GUIDE](./08-DEVELOPMENT_GUIDE.md) | 프로젝트 구조, 코딩 컨벤션, Git 전략 | 개발자 |
+| 09 | [SERVER_REQUIREMENTS](./09-SERVER_REQUIREMENTS.md) | Spring Boot 서버 API 명세 | 백엔드 개발자 |
 | - | [LOGGING](./LOGGING.md) | 로깅 표준, 이모지 컨벤션, 금지 패턴 | 개발자 |
 
 ---
