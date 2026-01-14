@@ -3,46 +3,70 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/categories.dart';
 import '../../../data/datasources/local/app_database.dart';
 
-class CategoryChips extends StatelessWidget {
-  final ScreenshotCategory selectedCategory;
-  final ValueChanged<ScreenshotCategory> onCategorySelected;
+class StatusChips extends StatelessWidget {
+  final ScreenshotStatus? selectedStatus;
+  final ValueChanged<ScreenshotStatus?> onStatusSelected;
 
-  const CategoryChips({
+  const StatusChips({
     super.key,
-    required this.selectedCategory,
-    required this.onCategorySelected,
+    required this.selectedStatus,
+    required this.onStatusSelected,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 56,
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          final categoryInfo = categories[index];
-          final isSelected = selectedCategory == categoryInfo.category;
+    final colorScheme = Theme.of(context).colorScheme;
 
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: FilterChip(
-              label: Text(categoryInfo.label),
-              selected: isSelected,
-              onSelected: (_) => onCategorySelected(categoryInfo.category),
-              showCheckmark: false,
-              selectedColor: Theme.of(context).colorScheme.primaryContainer,
-              labelStyle: TextStyle(
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: statusFilters.map((filterInfo) {
+          final isSelected = selectedStatus == filterInfo.status;
+
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Material(
                 color: isSelected
-                    ? Theme.of(context).colorScheme.onPrimaryContainer
-                    : null,
+                    ? colorScheme.primaryContainer
+                    : colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(12),
+                child: InkWell(
+                  onTap: () => onStatusSelected(filterInfo.status),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          filterInfo.icon,
+                          size: 20,
+                          color: isSelected
+                              ? colorScheme.onPrimaryContainer
+                              : colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          filterInfo.label,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: isSelected
+                                ? colorScheme.onPrimaryContainer
+                                : colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
           );
-        },
+        }).toList(),
       ),
     );
   }

@@ -24,7 +24,7 @@ class HomeState {
   final String? errorMessage;
   final bool hasPermission;
   final bool isMockMode;
-  final ScreenshotCategory selectedCategory;
+  final ScreenshotStatus? selectedStatus; // null이면 '전체'
   final String searchQuery;
 
   const HomeState({
@@ -34,7 +34,7 @@ class HomeState {
     this.errorMessage,
     this.hasPermission = false,
     this.isMockMode = kUseMockData,
-    this.selectedCategory = ScreenshotCategory.all,
+    this.selectedStatus, // 기본값 null = 전체
     this.searchQuery = '',
   });
 
@@ -45,7 +45,8 @@ class HomeState {
     String? errorMessage,
     bool? hasPermission,
     bool? isMockMode,
-    ScreenshotCategory? selectedCategory,
+    ScreenshotStatus? selectedStatus,
+    bool clearSelectedStatus = false,
     String? searchQuery,
   }) {
     return HomeState(
@@ -55,7 +56,7 @@ class HomeState {
       errorMessage: errorMessage ?? this.errorMessage,
       hasPermission: hasPermission ?? this.hasPermission,
       isMockMode: isMockMode ?? this.isMockMode,
-      selectedCategory: selectedCategory ?? this.selectedCategory,
+      selectedStatus: clearSelectedStatus ? null : (selectedStatus ?? this.selectedStatus),
       searchQuery: searchQuery ?? this.searchQuery,
     );
   }
@@ -66,7 +67,11 @@ class HomeState {
   List<MockScreenshot> get filteredMockScreenshots {
     var result = mockScreenshots;
 
-    // 카테고리 필터 (Mock에서는 적용 안함 - 실제 데이터에서만)
+    // 상태 필터
+    if (selectedStatus != null) {
+      result = result.where((s) => s.status == selectedStatus).toList();
+    }
+
     // 검색 필터 (Mock에서는 id로 간단히)
     if (searchQuery.isNotEmpty) {
       result = result
@@ -169,10 +174,13 @@ class HomeViewModel extends StateNotifier<HomeState> {
     }
   }
 
-  void filterByCategory(ScreenshotCategory category) {
-    Log.i('🏷️ [Home] 카테고리 필터 | ${category.name}');
-    state = state.copyWith(selectedCategory: category);
-    // 실제 구현에서는 DB에서 필터링된 결과를 다시 로드
+  void filterByStatus(ScreenshotStatus? status) {
+    Log.i('🏷️ [Home] 상태 필터 | ${status?.name ?? "전체"}');
+    if (status == null) {
+      state = state.copyWith(clearSelectedStatus: true);
+    } else {
+      state = state.copyWith(selectedStatus: status);
+    }
   }
 
   void search(String query) {

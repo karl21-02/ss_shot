@@ -1,5 +1,45 @@
+import 'package:flutter/material.dart';
+
 import '../../../data/datasources/local/app_database.dart';
 
+/// 상태 필터 정보
+class StatusFilterInfo {
+  final ScreenshotStatus? status; // null이면 '전체'
+  final String label;
+  final IconData icon;
+
+  const StatusFilterInfo({
+    required this.status,
+    required this.label,
+    required this.icon,
+  });
+}
+
+/// 홈 화면 상태 필터 목록
+const List<StatusFilterInfo> statusFilters = [
+  StatusFilterInfo(
+    status: null,
+    label: '전체',
+    icon: Icons.all_inclusive,
+  ),
+  StatusFilterInfo(
+    status: ScreenshotStatus.kept,
+    label: '보관',
+    icon: Icons.bookmark,
+  ),
+  StatusFilterInfo(
+    status: ScreenshotStatus.trash,
+    label: '쓸모없음',
+    icon: Icons.delete_outline,
+  ),
+  StatusFilterInfo(
+    status: ScreenshotStatus.unclassified,
+    label: '미분류',
+    icon: Icons.help_outline,
+  ),
+];
+
+/// 콘텐츠 카테고리 정보 (OCR 분류용 - 향후 사용)
 class CategoryInfo {
   final ScreenshotCategory category;
   final String label;

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/utils/logger.dart';
 import '../../../data/datasources/local/app_database.dart';
 import '../view_model/home_view_model.dart';
-import '../widgets/category_chips.dart';
+import '../widgets/category_chips.dart'; // StatusChips
 import '../widgets/home_content.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -25,9 +25,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
-  void _onCategorySelected(ScreenshotCategory category) {
-    Log.d('📱 [Home] 카테고리 선택 | ${category.name}');
-    ref.read(homeViewModelProvider.notifier).filterByCategory(category);
+  void _onStatusSelected(ScreenshotStatus? status) {
+    Log.d('📱 [Home] 상태 선택 | ${status?.name ?? "전체"}');
+    ref.read(homeViewModelProvider.notifier).filterByStatus(status);
   }
 
   void _onRefresh() {
@@ -45,10 +45,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       body: Column(
         children: [
-          // Category Filter Chips
-          CategoryChips(
-            selectedCategory: state.selectedCategory,
-            onCategorySelected: _onCategorySelected,
+          // Status Filter Chips
+          StatusChips(
+            selectedStatus: state.selectedStatus,
+            onStatusSelected: _onStatusSelected,
           ),
 
           // Content

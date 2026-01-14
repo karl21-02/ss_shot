@@ -7,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 
 part 'app_database.g.dart';
 
-/// 스크린샷 카테고리
+/// 스크린샷 카테고리 (콘텐츠 기반)
 enum ScreenshotCategory {
   all,
   finance,
@@ -15,6 +15,13 @@ enum ScreenshotCategory {
   schedule,
   humor,
   other,
+}
+
+/// 스크린샷 상태 (정리 상태 기반)
+enum ScreenshotStatus {
+  kept,         // 보관 (정리 모드에서 오른쪽 스와이프)
+  trash,        // 쓸모없음 (왼쪽 스와이프 또는 자동 분류)
+  unclassified, // 미분류 (아직 정리 안 함)
 }
 
 /// 스크린샷 테이블
