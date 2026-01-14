@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import '../../core/constants/app_strings.dart';
 
 class MainShell extends StatelessWidget {
@@ -15,36 +15,39 @@ class MainShell extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: navigationShell,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: (index) {
+      bottomNavigationBar: ConvexAppBar(
+        // 현재 선택된 인덱스를 연결해줘요
+        initialActiveIndex: navigationShell.currentIndex,
+        // 탭을 눌렀을 때 go_router의 브랜치를 이동시켜요
+        onTap: (index) {
           navigationShell.goBranch(
             index,
             initialLocation: index == navigationShell.currentIndex,
           );
         },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: AppStrings.navHome,
+        // 기존 destinations 내용을 TabItem으로 옮겨왔어유
+        items: [
+          TabItem(
+            icon: Icons.home,
+            title: AppStrings.navHome,
           ),
-          NavigationDestination(
-            icon: Icon(Icons.search_outlined),
-            selectedIcon: Icon(Icons.search),
-            label: AppStrings.navSearch,
+          TabItem(
+            icon: Icons.search,
+            title: AppStrings.navSearch,
           ),
-          NavigationDestination(
-            icon: Icon(Icons.auto_fix_high_outlined),
-            selectedIcon: Icon(Icons.auto_fix_high),
-            label: AppStrings.navClean,
+          TabItem(
+            icon: Icons.auto_fix_high,
+            title: AppStrings.navClean,
           ),
-          NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings),
-            label: AppStrings.navSettings,
+          TabItem(
+            icon: Icons.settings,
+            title: AppStrings.navSettings,
           ),
         ],
+        // 스타일이나 색상을 여기서 더 만질 수 있어유
+        backgroundColor: Colors.white,
+        activeColor: Colors.blue,
+        color: Colors.grey,
       ),
     );
   }

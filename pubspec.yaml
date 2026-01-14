@@ -49,6 +49,7 @@ dependencies:
   # Smart Actions
   url_launcher: ^6.2.5
   share_plus: ^7.2.2
+  convex_bottom_bar: ^3.2.0
 
 dev_dependencies:
   flutter_test:
