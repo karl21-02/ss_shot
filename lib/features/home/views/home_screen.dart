@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/logger.dart';
 import '../../../data/datasources/local/app_database.dart';
 import '../view_model/home_view_model.dart';
@@ -44,19 +43,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final state = ref.watch(homeViewModelProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          state.isMockMode
-              ? '${AppStrings.homeTitle} (Mock)'
-              : AppStrings.homeTitle,
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _onRefresh,
-          ),
-        ],
-      ),
       body: Column(
         children: [
           // Category Filter Chips

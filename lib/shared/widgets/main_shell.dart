@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../core/constants/app_strings.dart';
 
 class MainShell extends StatelessWidget {
@@ -23,8 +24,17 @@ class MainShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 1. 콘텐츠가 하단 바 뒤로 흐르지 않도록 false로 설정
       extendBody: false,
+      appBar: AppBar(
+        title: Text(
+          AppStrings.appName,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            letterSpacing: 8,
+            fontSize: 20,
+          ),
+        ),
+      ),
       body: navigationShell,
       bottomNavigationBar: _buildOpaqueBottomBar(context),
     );

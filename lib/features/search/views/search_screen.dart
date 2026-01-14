@@ -75,26 +75,39 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final hasQuery = _searchController.text.isNotEmpty;
 
     return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          controller: _searchController,
-          focusNode: _focusNode,
-          decoration: InputDecoration(
-            hintText: AppStrings.searchHint,
-            border: InputBorder.none,
-            suffixIcon: hasQuery
-                ? IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: _clearSearch,
-                  )
-                : null,
+      body: Column(
+        children: [
+          // 검색바
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: TextField(
+              controller: _searchController,
+              focusNode: _focusNode,
+              decoration: InputDecoration(
+                hintText: AppStrings.searchHint,
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: hasQuery
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: _clearSearch,
+                      )
+                    : null,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              ),
+              onChanged: _onSearchChanged,
+              onSubmitted: _onSearchSubmitted,
+              textInputAction: TextInputAction.search,
+            ),
           ),
-          onChanged: _onSearchChanged,
-          onSubmitted: _onSearchSubmitted,
-          textInputAction: TextInputAction.search,
-        ),
+          // 검색 결과
+          Expanded(
+            child: hasQuery ? _buildSearchResults(state) : _buildRecentSearches(),
+          ),
+        ],
       ),
-      body: hasQuery ? _buildSearchResults(state) : _buildRecentSearches(),
     );
   }
 

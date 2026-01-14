@@ -14,9 +14,6 @@ class SettingsScreen extends ConsumerWidget {
     Log.d('⚙️ [Settings] 화면 진입');
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppStrings.settingsTitle),
-      ),
       body: ListView(
         children: [
           // Mock Mode Toggle

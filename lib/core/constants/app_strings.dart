@@ -1,6 +1,6 @@
 abstract class AppStrings {
   // App
-  static const String appName = 'SS-Shot';
+  static const String appName = 'CLIO';
   static const String appDescription = 'Intelligent Screenshot Manager';
 
   // Navigation

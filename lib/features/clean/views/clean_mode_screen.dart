@@ -272,21 +272,22 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return Scaffold(
-        appBar: AppBar(title: const Text(AppStrings.cleanTitle)),
-        body: const Center(child: CircularProgressIndicator()),
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppStrings.cleanTitle),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(48),
-          child: _buildTabBar(),
-        ),
+      body: Column(
+        children: [
+          // 탭 바
+          _buildTabBar(),
+          // 컨텐츠
+          Expanded(
+            child: _selectedTab == 0 ? _buildSwipeMode() : _buildTrashList(),
+          ),
+        ],
       ),
-      body: _selectedTab == 0 ? _buildSwipeMode() : _buildTrashList(),
     );
   }
 
