@@ -6,7 +6,10 @@
 
 ## 1. Flutter 프로젝트 구조
 
-### 1.1 디렉토리 구조
+### 1.1 디렉토리 구조 (Feature-first)
+
+> **Feature-first** 구조를 채택하여 기능별로 코드를 응집시킵니다.
+> 각 기능(feature)은 view_model, views, widgets를 자체적으로 포함합니다.
 
 ```
 lib/
@@ -17,74 +20,157 @@ lib/
 │   ├── constants/               # 상수 정의
 │   │   ├── app_colors.dart
 │   │   ├── app_strings.dart
-│   │   └── api_endpoints.dart
+│   │   └── categories.dart
+│   ├── router/                  # 라우팅
+│   │   └── app_router.dart
 │   ├── utils/                   # 유틸리티
-│   │   ├── date_utils.dart
-│   │   └── regex_patterns.dart
-│   ├── errors/                  # 에러 처리
-│   │   └── failures.dart
+│   │   └── logger.dart
 │   └── extensions/              # 확장 함수
-│       └── string_extensions.dart
 │
 ├── data/                        # 데이터 레이어
-│   ├── datasources/             # 데이터 소스
-│   │   ├── remote/              # API 호출
-│   │   │   └── screenshot_remote_datasource.dart
-│   │   └── local/               # 로컬 DB
-│   │       └── screenshot_local_datasource.dart
-│   ├── models/                  # DTO/모델
-│   │   ├── screenshot_model.dart
-│   │   └── user_model.dart
-│   └── repositories/            # Repository 구현체
-│       └── screenshot_repository_impl.dart
+│   ├── datasources/
+│   │   └── local/               # 로컬 DB (Drift)
+│   │       └── app_database.dart
+│   └── models/                  # DTO/모델
+│       ├── mock_screenshot.dart
+│       └── ocr_result.dart
 │
-├── domain/                      # 도메인 레이어
-│   ├── entities/                # 엔티티 (순수 데이터)
-│   │   ├── screenshot.dart
-│   │   └── user.dart
-│   ├── repositories/            # Repository 인터페이스
-│   │   └── screenshot_repository.dart
-│   └── usecases/                # 비즈니스 로직
-│       ├── sync_screenshots.dart
-│       ├── search_screenshots.dart
-│       └── delete_screenshot.dart
-│
-├── presentation/                # 프레젠테이션 레이어
-│   ├── screens/                 # 화면
-│   │   ├── home/
-│   │   │   ├── home_screen.dart
-│   │   │   └── widgets/
-│   │   │       ├── category_tabs.dart
-│   │   │       └── gallery_grid.dart
-│   │   ├── search/
-│   │   │   └── search_screen.dart
-│   │   ├── detail/
-│   │   │   └── detail_screen.dart
-│   │   └── clean/
+├── features/                    # 기능별 모듈 ⭐
+│   ├── home/
+│   │   ├── view_model/
+│   │   │   └── home_view_model.dart
+│   │   ├── views/
+│   │   │   └── home_screen.dart
+│   │   └── widgets/             # 홈 전용 위젯
+│   │       ├── category_chips.dart
+│   │       └── home_content.dart
+│   ├── search/
+│   │   └── views/
+│   │       └── search_screen.dart
+│   ├── clean/
+│   │   └── views/
 │   │       └── clean_mode_screen.dart
-│   ├── viewmodels/              # ViewModel (Riverpod)
-│   │   ├── home_viewmodel.dart
-│   │   └── search_viewmodel.dart
-│   └── widgets/                 # 공통 위젯
-│       ├── loading_indicator.dart
-│       └── error_view.dart
+│   ├── detail/
+│   │   └── views/
+│   │       └── detail_screen.dart
+│   └── settings/
+│       └── views/
+│           └── settings_screen.dart
+│
+├── shared/                      # 공유 컴포넌트 ⭐
+│   └── widgets/
+│       ├── main_shell.dart      # 하단 네비게이션
+│       └── screenshot_grid_item.dart
 │
 ├── services/                    # 서비스
 │   ├── ocr_service.dart         # ML Kit OCR
 │   ├── gallery_service.dart     # 갤러리 접근
-│   └── sync_service.dart        # 동기화 엔진
+│   └── smart_action_service.dart # 스마트 액션
 │
 └── di/                          # 의존성 주입
-    └── injection.dart
+    └── providers.dart
 ```
 
 ### 1.2 레이어별 역할
 
 | 레이어 | 역할 | 의존성 방향 |
 | --- | --- | --- |
-| **Presentation** | UI, 상태 관리 | → Domain |
-| **Domain** | 비즈니스 로직, 엔티티 | 의존성 없음 (Core) |
-| **Data** | API 호출, DB 접근, Repository 구현 | → Domain |
+| **Features** | 기능별 UI, 상태 관리, 위젯 | → Core, Data, Services |
+| **Shared** | 공유 위젯, 공통 컴포넌트 | → Core |
+| **Data** | DB 접근, 모델 | → Core |
+| **Services** | 외부 서비스 연동 (OCR, Gallery) | → Core, Data |
+
+---
+
+### 1.3 위젯 분리 패턴 (Widget Separation Pattern)
+
+> **Screen은 위젯 조합만 담당** (100줄 이하 권장)
+> 복잡한 UI 로직은 별도 위젯으로 분리하여 가독성과 재사용성을 높입니다.
+
+**위젯 위치 결정 기준:**
+
+| 사용 범위 | 위치 | 예시 |
+|-----------|------|------|
+| 1개 기능에서만 사용 | `features/[기능]/widgets/` | `CategoryChips` |
+| 2개 이상 기능에서 사용 | `shared/widgets/` | `ScreenshotGridItem` |
+| 앱 전체에서 사용 | `shared/widgets/` | `MainShell` |
+
+**Feature 폴더 구조 예시:**
+
+```
+features/home/
+├── view_model/
+│   └── home_view_model.dart    # 상태 관리
+├── views/
+│   └── home_screen.dart        # 화면 (조합만, ~80줄)
+└── widgets/                    # 기능 전용 위젯
+    ├── category_chips.dart     # 카테고리 필터 (~50줄)
+    └── home_content.dart       # 상태별 콘텐츠 (~200줄)
+```
+
+**Screen 작성 패턴:**
+
+```dart
+// ✅ Good: Screen은 조합만 담당
+@override
+Widget build(BuildContext context) {
+  final state = ref.watch(homeViewModelProvider);
+
+  return Scaffold(
+    appBar: AppBar(title: Text(AppStrings.homeTitle)),
+    body: Column(
+      children: [
+        CategoryChips(
+          selectedCategory: state.selectedCategory,
+          onCategorySelected: _onCategorySelected,
+        ),
+        Expanded(
+          child: HomeContent(
+            state: state,
+            onRefresh: _onRefresh,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+// ❌ Bad: Screen에 모든 로직 포함 (250줄+)
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: Column(
+      children: [
+        Container(                          // 인라인 위젯
+          height: 56,
+          child: ListView.builder(
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              // ... 30줄의 FilterChip 로직
+            },
+          ),
+        ),
+        Expanded(
+          child: switch (state.status) {    // 복잡한 분기 로직
+            HomeStatus.loading => ...,
+            HomeStatus.error => ...,
+            // ... 100줄의 상태별 UI
+          },
+        ),
+      ],
+    ),
+  );
+}
+```
+
+**분리 기준:**
+
+| 조건 | 액션 |
+|------|------|
+| 위젯 코드 50줄 이상 | 별도 파일로 분리 |
+| 상태별 UI (loading, error, loaded) | `_ContentWidget` 분리 |
+| 동일 패턴 2회 이상 반복 | 공통 위젯으로 추출 |
+| 재사용 가능성 있음 | `shared/widgets/`로 이동 |
 
 ---
 
