@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../constants/app_colors.dart';
 import '../../features/clean/views/clean_mode_screen.dart';
 import '../../features/detail/views/detail_screen.dart';
 import '../../features/home/views/home_screen.dart';
@@ -88,7 +89,7 @@ final appRouter = GoRouter(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline, size: 64, color: Colors.red),
+          Icon(Icons.error_outline, size: 64, color: AppColors.error),
           const SizedBox(height: 16),
           Text('Page not found: ${state.uri}'),
           const SizedBox(height: 24),

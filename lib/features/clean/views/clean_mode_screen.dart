@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/logger.dart';
 import '../../../data/models/mock_screenshot.dart';
@@ -9,10 +10,10 @@ import '../../home/view_model/home_view_model.dart';
 
 /// 스크린샷 유용성 점수 (높을수록 중요)
 enum UsefulnessLevel {
-  high(3, '중요'),      // 금융, 일정 등
-  medium(2, '보통'),    // 쇼핑, 기타
-  low(1, '낮음'),       // 유머, 밈
-  trash(0, '쓸모없음'); // 오래된 것, 중복, 텍스트 없음
+  high(3, '중요'),
+  medium(2, '보통'),
+  low(1, '낮음'),
+  trash(0, '쓸모없음');
 
   final int score;
   final String label;
@@ -50,15 +51,12 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
   int _keptCount = 0;
   bool _isLoading = true;
 
-  // Tab selection: 0 = 스와이프 정리, 1 = 쓸모없는 스샷
   int _selectedTab = 0;
 
-  // Animation controllers
   late AnimationController _swipeController;
   late Animation<Offset> _swipeAnimation;
   late Animation<double> _rotationAnimation;
 
-  // Drag state
   Offset _dragOffset = Offset.zero;
 
   @override
@@ -92,21 +90,17 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
     });
   }
 
-  /// 카드 로드 및 유용성 점수 계산
   void _loadAndScoreCards() {
     final state = ref.read(homeViewModelProvider);
 
-    // Mock 데이터에 유용성 점수 부여
     _allCards = state.mockScreenshots.map((screenshot) {
       return _scoreScreenshot(screenshot);
     }).toList();
 
-    // 쓸모없는 것 분리
     _trashCards = _allCards
         .where((s) => s.usefulness == UsefulnessLevel.trash)
         .toList();
 
-    // 나머지는 유용성 높은 순으로 정렬 (중요한 것 먼저)
     _sortedCards = _allCards
         .where((s) => s.usefulness != UsefulnessLevel.trash)
         .toList()
@@ -121,15 +115,10 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
         'sorted: ${_sortedCards.length}, trash: ${_trashCards.length}');
   }
 
-  /// 스크린샷 유용성 점수 계산
   ScoredScreenshot _scoreScreenshot(MockScreenshot screenshot) {
-    // Mock 데이터에서는 ID 기반으로 임의 분류
-    // 실제로는 OCR 텍스트, 카테고리, 날짜 등으로 판단
-
     final id = screenshot.id.toLowerCase();
     final index = int.tryParse(id.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
 
-    // 간단한 규칙 기반 분류 (실제로는 ML 또는 규칙 엔진 사용)
     if (index % 7 == 0) {
       return ScoredScreenshot(
         screenshot: screenshot,
@@ -169,9 +158,7 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
     super.dispose();
   }
 
-  void _onPanStart(DragStartDetails details) {
-    // Drag started
-  }
+  void _onPanStart(DragStartDetails details) {}
 
   void _onPanUpdate(DragUpdateDetails details) {
     setState(() {
@@ -264,7 +251,7 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
             child: const Text(AppStrings.cancel),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
             onPressed: () {
               Navigator.pop(context);
               setState(() {
@@ -342,9 +329,8 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
     bool isWarning = false,
   }) {
     final isSelected = _selectedTab == index;
-    final color = isSelected
-        ? Theme.of(context).colorScheme.primary
-        : Theme.of(context).colorScheme.onSurfaceVariant;
+    final colorScheme = Theme.of(context).colorScheme;
+    final color = isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant;
 
     return GestureDetector(
       onTap: () => setState(() => _selectedTab = index),
@@ -352,9 +338,7 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected
-              ? Theme.of(context).colorScheme.primaryContainer
-              : Colors.transparent,
+          color: isSelected ? colorScheme.primaryContainer : Colors.transparent,
           borderRadius: BorderRadius.circular(25),
         ),
         child: Row(
@@ -375,14 +359,14 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
                 color: isWarning && count > 0
-                    ? Colors.red.withValues(alpha: 0.2)
+                    ? AppColors.error.withValues(alpha: 0.2)
                     : color.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
                 '$count',
                 style: TextStyle(
-                  color: isWarning && count > 0 ? Colors.red : color,
+                  color: isWarning && count > 0 ? AppColors.error : color,
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
                 ),
@@ -406,6 +390,8 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
   }
 
   Widget _buildTrashList() {
+    final colorScheme = Theme.of(context).colorScheme;
+
     if (_trashCards.isEmpty) {
       return Center(
         child: Column(
@@ -414,13 +400,13 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
             Icon(
               Icons.check_circle_outline,
               size: 64,
-              color: Theme.of(context).colorScheme.outline,
+              color: colorScheme.outline,
             ),
             const SizedBox(height: 16),
             Text(
               '쓸모없는 스크린샷이 없습니다',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.outline,
+                    color: colorScheme.outline,
                   ),
             ),
           ],
@@ -430,7 +416,6 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
 
     return Column(
       children: [
-        // Header with delete all button
         Container(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -438,14 +423,14 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
               Icon(
                 Icons.info_outline,
                 size: 20,
-                color: Theme.of(context).colorScheme.outline,
+                color: colorScheme.outline,
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   '자동으로 감지된 불필요한 스크린샷입니다',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.outline,
+                        color: colorScheme.outline,
                       ),
                 ),
               ),
@@ -454,15 +439,13 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
                 icon: const Icon(Icons.delete_sweep, size: 18),
                 label: const Text('모두 삭제'),
                 style: FilledButton.styleFrom(
-                  foregroundColor: Colors.red,
-                  backgroundColor: Colors.red.withValues(alpha: 0.1),
+                  foregroundColor: AppColors.error,
+                  backgroundColor: AppColors.error.withValues(alpha: 0.1),
                 ),
               ),
             ],
           ),
         ),
-
-        // List
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -484,8 +467,8 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
       background: Container(
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
-        color: Colors.red,
-        child: const Icon(Icons.delete, color: Colors.white),
+        color: AppColors.error,
+        child: const Icon(Icons.delete, color: AppColors.onPrimary),
       ),
       onDismissed: (_) {
         setState(() {
@@ -507,7 +490,7 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
               errorBuilder: (_, __, ___) => Container(
                 width: 56,
                 height: 56,
-                color: Colors.grey[300],
+                color: AppColors.grey300,
                 child: const Icon(Icons.image),
               ),
             ),
@@ -521,12 +504,12 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
+                  color: AppColors.error.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
                   card.reason,
-                  style: const TextStyle(fontSize: 11, color: Colors.red),
+                  style: const TextStyle(fontSize: 11, color: AppColors.error),
                 ),
               ),
             ],
@@ -550,6 +533,8 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
   }
 
   Widget _buildCompleteView() {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -557,7 +542,7 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
           const Icon(
             Icons.check_circle_outline,
             size: 80,
-            color: Colors.green,
+            color: AppColors.success,
           ),
           const SizedBox(height: 24),
           Text(
@@ -568,7 +553,7 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
           Text(
             '보관: $_keptCount개  /  삭제: $_deletedCount개',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.outline,
+                  color: colorScheme.outline,
                 ),
           ),
           const SizedBox(height: 32),
@@ -603,7 +588,6 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
 
     return Stack(
       children: [
-        // Background cards (preview)
         if (_currentIndex + 1 < _sortedCards.length)
           Positioned.fill(
             child: Center(
@@ -652,7 +636,7 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
           ),
         ),
 
-        // Swipe hint icons
+        // Swipe hint - Left (Delete)
         Positioned(
           left: 32,
           top: 60,
@@ -668,21 +652,21 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: _swipeProgress < -0.2
-                          ? Colors.red.withValues(alpha: 0.9)
-                          : Colors.grey.withValues(alpha: 0.3),
+                          ? AppColors.error.withValues(alpha: 0.9)
+                          : AppColors.grey400.withValues(alpha: 0.3),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.delete_outline,
                       size: 32,
-                      color: _swipeProgress < -0.2 ? Colors.white : Colors.grey,
+                      color: _swipeProgress < -0.2 ? AppColors.onPrimary : AppColors.grey500,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     AppStrings.cleanSwipeLeft,
                     style: TextStyle(
-                      color: _swipeProgress < -0.2 ? Colors.red : Colors.grey,
+                      color: _swipeProgress < -0.2 ? AppColors.error : AppColors.grey500,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -691,6 +675,8 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
             ),
           ),
         ),
+
+        // Swipe hint - Right (Keep)
         Positioned(
           right: 32,
           top: 60,
@@ -706,21 +692,21 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: _swipeProgress > 0.2
-                          ? Colors.green.withValues(alpha: 0.9)
-                          : Colors.grey.withValues(alpha: 0.3),
+                          ? AppColors.success.withValues(alpha: 0.9)
+                          : AppColors.grey400.withValues(alpha: 0.3),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.favorite_outline,
                       size: 32,
-                      color: _swipeProgress > 0.2 ? Colors.white : Colors.grey,
+                      color: _swipeProgress > 0.2 ? AppColors.onPrimary : AppColors.grey500,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     AppStrings.cleanSwipeRight,
                     style: TextStyle(
-                      color: _swipeProgress > 0.2 ? Colors.green : Colors.grey,
+                      color: _swipeProgress > 0.2 ? AppColors.success : AppColors.grey500,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -763,7 +749,7 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
           ),
         ),
 
-        // Action buttons at bottom
+        // Action buttons
         Positioned(
           left: 0,
           right: 0,
@@ -773,13 +759,13 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
             children: [
               _buildActionButton(
                 icon: Icons.close,
-                color: Colors.red,
+                color: AppColors.error,
                 onTap: () => _animateSwipe(false),
                 label: AppStrings.cleanSwipeLeft,
               ),
               _buildActionButton(
                 icon: Icons.favorite,
-                color: Colors.green,
+                color: AppColors.success,
                 onTap: () => _animateSwipe(true),
                 label: AppStrings.cleanSwipeRight,
               ),
@@ -793,13 +779,13 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
   Color _getUsefulnessColor(UsefulnessLevel level) {
     switch (level) {
       case UsefulnessLevel.high:
-        return Colors.green;
+        return AppColors.usefulnessHigh;
       case UsefulnessLevel.medium:
-        return Colors.blue;
+        return AppColors.usefulnessMedium;
       case UsefulnessLevel.low:
-        return Colors.orange;
+        return AppColors.usefulnessLow;
       case UsefulnessLevel.trash:
-        return Colors.red;
+        return AppColors.usefulnessTrash;
     }
   }
 
@@ -821,16 +807,17 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
     final screenWidth = MediaQuery.of(context).size.width;
     final cardWidth = screenWidth * 0.85;
     final cardHeight = cardWidth * 1.2;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
       width: cardWidth,
       height: cardHeight,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isBackground ? 0.1 : 0.2),
+            color: AppColors.cardShadow.withValues(alpha: isBackground ? 0.1 : 0.2),
             blurRadius: isBackground ? 10 : 20,
             offset: const Offset(0, 10),
           ),
@@ -841,7 +828,6 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // Image
             Image.network(
               screenshot.imageUrl,
               fit: BoxFit.cover,
@@ -858,26 +844,26 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
               },
               errorBuilder: (context, error, stackTrace) {
                 return Container(
-                  color: Colors.grey[200],
+                  color: AppColors.grey200,
                   child: const Icon(Icons.image_not_supported, size: 64),
                 );
               },
             ),
 
-            // Gradient overlay at bottom
+            // Gradient overlay
             Positioned(
               left: 0,
               right: 0,
               bottom: 0,
               child: Container(
                 height: 80,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Colors.black.withValues(alpha: 0.7),
+                      AppColors.overlay,
                     ],
                   ),
                 ),
@@ -885,7 +871,7 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
                 child: Text(
                   screenshot.id,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.onPrimary,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -899,14 +885,14 @@ class _CleanModeScreenState extends ConsumerState<CleanModeScreen>
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   color: _swipeProgress > 0
-                      ? Colors.green.withValues(alpha: _swipeProgress.abs() * 0.5)
-                      : Colors.red.withValues(alpha: _swipeProgress.abs() * 0.5),
+                      ? AppColors.success.withValues(alpha: _swipeProgress.abs() * 0.5)
+                      : AppColors.error.withValues(alpha: _swipeProgress.abs() * 0.5),
                 ),
                 child: Center(
                   child: Icon(
                     _swipeProgress > 0 ? Icons.favorite : Icons.delete,
                     size: 80,
-                    color: Colors.white.withValues(alpha: _swipeProgress.abs()),
+                    color: AppColors.onPrimary.withValues(alpha: _swipeProgress.abs()),
                   ),
                 ),
               ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/logger.dart';
 import '../../home/view_model/home_view_model.dart';
@@ -70,13 +71,13 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(),
 
           // Developer Options
-          const Padding(
-            padding: EdgeInsets.all(16),
+          Padding(
+            padding: const EdgeInsets.all(16),
             child: Text(
               '개발자 옵션',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Colors.grey,
+                color: AppColors.grey500,
               ),
             ),
           ),

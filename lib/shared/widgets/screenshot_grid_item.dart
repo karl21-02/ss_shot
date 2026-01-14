@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 
+import '../../core/constants/app_colors.dart';
 import '../../data/models/mock_screenshot.dart';
 
 class ScreenshotGridItem extends StatelessWidget {
@@ -38,13 +39,13 @@ class ScreenshotGridItem extends StatelessWidget {
         imageUrl: mockScreenshot!.imageUrl,
         fit: BoxFit.cover,
         placeholder: (context, url) => Container(
-          color: Colors.grey[200],
+          color: AppColors.grey200,
           child: const Center(
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
         ),
         errorWidget: (context, url, error) => Container(
-          color: Colors.grey[300],
+          color: AppColors.grey300,
           child: const Icon(Icons.error_outline),
         ),
       ),
@@ -68,7 +69,7 @@ class ScreenshotGridItem extends StatelessWidget {
 
         return Container(
           decoration: BoxDecoration(
-            color: Colors.grey[200],
+            color: AppColors.grey200,
             borderRadius: BorderRadius.circular(8),
           ),
           child: const Center(

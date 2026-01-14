@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/logger.dart';
 import '../../../data/models/mock_screenshot.dart';
@@ -85,13 +86,13 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
           PopupMenuButton<String>(
             onSelected: _handleMenuAction,
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'delete',
                 child: Row(
                   children: [
-                    Icon(Icons.delete_outline, color: Colors.red),
-                    SizedBox(width: 8),
-                    Text('삭제', style: TextStyle(color: Colors.red)),
+                    Icon(Icons.delete_outline, color: AppColors.error),
+                    const SizedBox(width: 8),
+                    Text('삭제', style: TextStyle(color: AppColors.error)),
                   ],
                 ),
               ),
@@ -137,7 +138,7 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
                 color: Theme.of(context).colorScheme.surface,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
+                    color: AppColors.cardShadow.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),
@@ -184,27 +185,27 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
     switch (action.type) {
       case SmartActionType.url:
         icon = Icons.language;
-        color = Colors.blue;
+        color = AppColors.actionUrl;
         label = AppStrings.detailOpenUrl;
         break;
       case SmartActionType.accountNumber:
         icon = Icons.account_balance;
-        color = Colors.green;
+        color = AppColors.actionAccount;
         label = AppStrings.detailCopyAccount;
         break;
       case SmartActionType.date:
         icon = Icons.calendar_today;
-        color = Colors.orange;
+        color = AppColors.actionDate;
         label = AppStrings.detailAddCalendar;
         break;
       case SmartActionType.phoneNumber:
         icon = Icons.phone;
-        color = Colors.teal;
+        color = AppColors.actionPhone;
         label = '전화 걸기';
         break;
       case SmartActionType.email:
         icon = Icons.email;
-        color = Colors.purple;
+        color = AppColors.actionEmail;
         label = '이메일 보내기';
         break;
     }
@@ -249,7 +250,7 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
                 Text(
                   action.displayText,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
+                        color: AppColors.grey600,
                       ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -329,7 +330,7 @@ class _DetailScreenState extends ConsumerState<DetailScreen> {
           ),
           FilledButton(
             style: FilledButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.error,
             ),
             onPressed: () {
               Navigator.pop(context);
