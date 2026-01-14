@@ -6,7 +6,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/logger.dart';
 import '../../../data/models/mock_screenshot.dart';
 import '../../../services/smart_action_service.dart';
-import '../../view_models/home_view_model.dart';
+import '../../home/view_model/home_view_model.dart';
 
 class DetailScreen extends ConsumerStatefulWidget {
   final String screenshotId;

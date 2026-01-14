@@ -8,8 +8,8 @@ import '../../../core/constants/categories.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/utils/logger.dart';
 import '../../../data/datasources/local/app_database.dart';
-import '../../view_models/home_view_model.dart';
-import '../../widgets/screenshot_grid_item.dart';
+import '../view_model/home_view_model.dart';
+import '../../../shared/widgets/screenshot_grid_item.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});

@@ -6,8 +6,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/logger.dart';
-import '../../view_models/home_view_model.dart';
-import '../../widgets/screenshot_grid_item.dart';
+import '../../home/view_model/home_view_model.dart';
+import '../../../shared/widgets/screenshot_grid_item.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../presentation/views/clean/clean_mode_screen.dart';
-import '../../presentation/views/detail/detail_screen.dart';
-import '../../presentation/views/home/home_screen.dart';
-import '../../presentation/views/main_shell.dart';
-import '../../presentation/views/search/search_screen.dart';
-import '../../presentation/views/settings/settings_screen.dart';
+import '../../features/clean/views/clean_mode_screen.dart';
+import '../../features/detail/views/detail_screen.dart';
+import '../../features/home/views/home_screen.dart';
+import '../../features/search/views/search_screen.dart';
+import '../../features/settings/views/settings_screen.dart';
+import '../../shared/widgets/main_shell.dart';
 
 abstract class AppRoutes {
   static const String home = '/';

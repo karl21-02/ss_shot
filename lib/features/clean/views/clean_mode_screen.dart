@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/logger.dart';
 import '../../../data/models/mock_screenshot.dart';
-import '../../view_models/home_view_model.dart';
+import '../../home/view_model/home_view_model.dart';
 
 /// 스크린샷 유용성 점수 (높을수록 중요)
 enum UsefulnessLevel {
