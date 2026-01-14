@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import '../../core/constants/app_strings.dart';
 
 class MainShell extends StatelessWidget {
@@ -11,43 +11,98 @@ class MainShell extends StatelessWidget {
     required this.navigationShell,
   });
 
+  void _onTap(BuildContext context, int index) {
+    HapticFeedback.selectionClick();
+
+    navigationShell.goBranch(
+      index,
+      initialLocation: index == navigationShell.currentIndex,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // 1. 콘텐츠가 하단 바 뒤로 흐르지 않도록 false로 설정
+      extendBody: false,
       body: navigationShell,
-      bottomNavigationBar: ConvexAppBar(
-        // 현재 선택된 인덱스를 연결해줘요
-        initialActiveIndex: navigationShell.currentIndex,
-        // 탭을 눌렀을 때 go_router의 브랜치를 이동시켜요
-        onTap: (index) {
-          navigationShell.goBranch(
-            index,
-            initialLocation: index == navigationShell.currentIndex,
-          );
-        },
-        // 기존 destinations 내용을 TabItem으로 옮겨왔어유
-        items: [
-          TabItem(
-            icon: Icons.home,
-            title: AppStrings.navHome,
+      bottomNavigationBar: _buildOpaqueBottomBar(context),
+    );
+  }
+
+  Widget _buildOpaqueBottomBar(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
+    return Container(
+      width: double.infinity,
+      // SafeArea를 고려한 높이 설정
+      height: 70 + bottomPadding,
+      decoration: BoxDecoration(
+        // 2. 투명도 없는 완전한 흰색 적용
+        color: Colors.white,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(25),
+          topRight: Radius.circular(25),
+        ),
+        // 상단 경계선 추가로 영역 구분 명확화
+        border: Border(
+          top: BorderSide(
+            color: Colors.black.withOpacity(0.05),
+            width: 1,
           ),
-          TabItem(
-            icon: Icons.search,
-            title: AppStrings.navSearch,
-          ),
-          TabItem(
-            icon: Icons.auto_fix_high,
-            title: AppStrings.navClean,
-          ),
-          TabItem(
-            icon: Icons.settings,
-            title: AppStrings.navSettings,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
           ),
         ],
-        // 스타일이나 색상을 여기서 더 만질 수 있어유
-        backgroundColor: Colors.white,
-        activeColor: Colors.blue,
-        color: Colors.grey,
+      ),
+      child: Padding(
+        padding: EdgeInsets.only(bottom: bottomPadding),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavItem(context, 0, Icons.grid_view_rounded, AppStrings.navHome),
+            _buildNavItem(context, 1, Icons.search_rounded, AppStrings.navSearch),
+            _buildNavItem(context, 2, Icons.auto_fix_high_rounded, AppStrings.navClean),
+            _buildNavItem(context, 3, Icons.settings_rounded, AppStrings.navSettings),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(BuildContext context, int index, IconData icon, String label) {
+    final isSelected = navigationShell.currentIndex == index;
+    final activeColor = const Color(0xFF2196F3); // [05-UI_UX_SPEC.md] Primary Blue
+    final inactiveColor = const Color(0xFF757575);
+
+    return Expanded(
+      child: InkWell(
+        onTap: () => _onTap(context, index),
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? activeColor : inactiveColor,
+              size: 24,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? activeColor : inactiveColor,
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
